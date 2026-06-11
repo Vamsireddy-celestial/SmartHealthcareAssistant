@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Management - Smart Healthcare</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+.admin-header{background:#1a2b4a;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;}
+.admin-header .brand{color:#fff;font-size:1.1rem;font-weight:700;}
+.admin-header .links{display:flex;gap:14px;align-items:center;}
+.admin-header a{color:#93c5fd;text-decoration:none;font-size:.9rem;}
+.logout-btn{background:#ef4444;color:#fff!important;padding:6px 14px;border-radius:6px;font-weight:600;}
+.role-badge{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700;}
+.role-superadmin{background:#fee2e2;color:#b91c1c;}
+.role-admin{background:#fef3c7;color:#92400e;}
+.role-doctor{background:#dcfce7;color:#16a34a;}
+.role-viewer{background:#dbeafe;color:#1d4ed8;}
+.action-btn{padding:5px 12px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;text-decoration:none;display:inline-block;margin:2px;}
+.btn-edit{background:#dbeafe;color:#1d4ed8;}
+.btn-toggle{background:#fef3c7;color:#92400e;}
+.btn-delete{background:#fee2e2;color:#b91c1c;}
+.add-form{background:#f8faff;border:1.5px dashed #93c5fd;border-radius:10px;padding:20px;margin-bottom:20px;}
+.add-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.add-form label{font-size:.85rem;font-weight:600;color:#374151;display:block;margin-bottom:4px;}
+.add-form input,.add-form select{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:.9rem;outline:none;}
+.flash-msg{padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:.9rem;font-weight:600;}
+.flash-success{background:#dcfce7;color:#16a34a;}
+.flash-error{background:#fee2e2;color:#b91c1c;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal.open{display:flex;}
+.modal-card{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal-card h3{margin-bottom:18px;color:#1a2b4a;}
+.permissions-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.82rem;}
+.perm-item{display:flex;align-items:center;gap:6px;padding:4px;}
+.perm-yes{color:#16a34a;}
+.perm-no{color:#d1d5db;}
+@media(max-width:768px){.add-form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="admin-header">
+  <div class="brand">🏥 Smart Healthcare — User Management</div>
+  <div class="links">
+    <span style="color:#93c5fd;font-size:.9rem;">
+      👤 {{ admin_name }}
+      <span class="role-badge role-{{ admin_role }}" style="margin-left:6px;">{{ role_label }}</span>
+    </span>
+    <a href="{{ url_for('admin_dashboard') }}">← Dashboard</a>
+    <a href="{{ url_for('index') }}">🌐 App</a>
+    <a href="{{ url_for('admin_logout') }}" class="logout-btn">🚪 Logout</a>
+  </div>
+</div>
+
+<div class="container" style="padding-top:24px;">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Role Permissions Overview -->
+  <div class="card">
+    <h2>🔐 Role Permissions Overview</h2>
+    <table class="medicine-table">
+      <thead>
+        <tr>
+          <th>Permission</th>
+          <th>🔴 Super Admin</th>
+          <th>🟠 Admin</th>
+          <th>🟢 Doctor</th>
+          <th>🔵 Viewer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for perm in ['view_dashboard','view_consultations','manage_camps','manage_users','view_analytics','download_reports','view_security'] %}
+        <tr>
+          <td><strong>{{ perm.replace('_',' ').title() }}</strong></td>
+          {% for role in ['superadmin','admin','doctor','viewer'] %}
+          <td style="text-align:center;">
+            {% if perm in role_labels %}✅{% endif %}
+            {% if role == 'superadmin' %}✅
+            {% elif role == 'admin' and perm in ['view_dashboard','view_consultations','manage_camps','view_analytics','download_reports'] %}✅
+            {% elif role == 'doctor' and perm in ['view_dashboard','view_consultations'] %}✅
+            {% elif role == 'viewer' and perm == 'view_dashboard' %}✅
+            {% else %}❌{% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add User -->
+  <div class="card">
+    <h2>➕ Add New User</h2>
+    <div class="add-form">
+      <form method="POST" action="{{ url_for('admin_add_user') }}">
+        <div class="add-form-grid">
+          <div>
+            <label>Full Name *</label>
+            <input type="text" name="name" placeholder="e.g. Dr. Ramesh Kumar" required>
+          </div>
+          <div>
+            <label>Username *</label>
+            <input type="text" name="username" placeholder="e.g. ramesh_doc" required>
+          </div>
+          <div>
+            <label>Email</label>
+            <input type="email" name="email" placeholder="email@example.com">
+          </div>
+          <div>
+            <label>Password * (min 6 chars)</label>
+            <input type="password" name="password" placeholder="Set password" required>
+          </div>
+          <div>
+            <label>Role *</label>
+            <select name="role" required>
+              {% for role in roles %}
+              <option value="{{ role }}">{{ role_labels[role] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:14px;">➕ Add User</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="card">
+    <h2>👥 All Admin Users ({{ users | length }})</h2>
+    <table class="medicine-table">
+      <thead>
+        <tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Created By</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td><strong>{{ user.name }}</strong></td>
+          <td><code>{{ user.username }}</code></td>
+          <td>{{ user.email or '—' }}</td>
+          <td><span class="role-badge role-{{ user.role }}">{{ role_labels[user.role] }}</span></td>
+          <td>
+            {% if user.active %}<span class="badge badge-green">Active</span>
+            {% else %}<span class="badge badge-red">Inactive</span>{% endif %}
+          </td>
+          <td style="font-size:.82rem;color:#6b7280;">{{ user.last_login or 'Never' }}</td>
+          <td style="font-size:.82rem;color:#6b7280;">{{ user.created_by }}</td>
+          <td style="white-space:nowrap;">
+            {% if user.username != admin_user %}
+            <button class="action-btn btn-edit"
+              onclick="openEdit('{{ user.username }}','{{ user.name }}','{{ user.email or '' }}','{{ user.role }}')">
+              ✏️ Edit
+            </button>
+            <a href="{{ url_for('admin_toggle_user', username=user.username) }}"
+               class="action-btn btn-toggle"
+               onclick="return confirm('Toggle status for {{ user.name }}?')">
+              {% if user.active %}🔒 Deactivate{% else %}✅ Activate{% endif %}
+            </a>
+            <a href="{{ url_for('admin_delete_user', username=user.username) }}"
+               class="action-btn btn-delete"
+               onclick="return confirm('DELETE {{ user.name }}? This cannot be undone.')">
+              🗑️ Delete
+            </a>
+            {% else %}
+            <span style="color:#9ca3af;font-size:.82rem;">← Your account</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <h3>✏️ Edit User</h3>
+    <form method="POST" id="editForm">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" id="editName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" id="editEmail">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select name="role" id="editRole">
+          {% for role in roles %}
+          <option value="{{ role }}">{{ role_labels[role] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>New Password (leave blank to keep current)</label>
+        <input type="password" name="password" placeholder="Leave blank to keep current password">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        <button type="button" class="btn btn-secondary" onclick="closeEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEdit(username, name, email, role) {
+  document.getElementById('editName').value  = name;
+  document.getElementById('editEmail').value = email;
+  document.getElementById('editRole').value  = role;
+  document.getElementById('editForm').action = `/admin/users/edit/${username}`;
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('open');
+}
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEdit();
+});
+</script>
+</body>
+</html>

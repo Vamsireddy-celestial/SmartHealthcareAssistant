@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+@media print {
+  .navbar, .no-print, .btn, nav { display: none !important; }
+  body { background: #fff !important; }
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+  .container { padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar no-print">
+  <div class="nav-brand">🏥 Smart Healthcare Assistant</div>
+  <div class="nav-links">
+    <button class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</button>
+    <a href="/">← New Analysis</a>
+    <a href="/chat">💬 AI Chat</a>
+    <a href="/history">📋 History</a>
+  </div>
+</nav>
+
+<!-- Emergency Banner -->
+{% if disease == 'Cardiac Issue' %}
+<div class="emergency-banner">
+  <div class="emergency-content">
+    <span class="emergency-icon">🚨</span>
+    <div>
+      <strong>EMERGENCY — Possible Cardiac Issue Detected!</strong>
+      <p>Please call 108 immediately and go to the nearest hospital. Do NOT drive yourself.</p>
+    </div>
+    <a href="tel:108" class="call-btn">📞 Call 108 NOW</a>
+  </div>
+</div>
+{% endif %}
+
+<div class="container">
+
+  <!-- Token Banner -->
+  <div class="token-banner">
+    <div>
+      <div class="token-label">Your Token Number</div>
+      <div class="token-value">{{ token }}</div>
+    </div>
+    <div class="token-info">
+      <div><strong>{{ name }}</strong> | {{ age }} yrs | {{ gender }}</div>
+      <div style="font-size:0.85rem;opacity:0.75;">Severity: {{ severity }} | Duration: {{ duration }}</div>
+    </div>
+  </div>
+
+  <!-- Prediction Card -->
+  <div class="card result-card">
+    <h2>🔬 Analysis Results</h2>
+
+    <div class="symptoms-summary">
+      <strong>Symptoms:</strong> {{ symptoms | join(', ') }}
+    </div>
+
+    <div class="prediction-box">
+      <div class="prediction-main">
+        <div class="disease-name">{{ disease }}</div>
+        <div class="confidence-badge">{{ confidence }} confidence</div>
+        {% if severity == 'Severe' %}
+        <div class="severity-badge severe">⚠️ Severe</div>
+        {% elif severity == 'Moderate' %}
+        <div class="severity-badge moderate">😐 Moderate</div>
+        {% else %}
+        <div class="severity-badge mild">😊 Mild</div>
+        {% endif %}
+      </div>
+      <div class="specialist-tag">👨‍⚕️ Recommended: {{ specialization }}</div>
+      <div class="duration-tag">⏱️ Duration reported: {{ duration }}</div>
+    </div>
+
+    <!-- Claude AI Explanation -->
+    <div class="explanation-box">
+      <h3>🤖 AI Explanation (Powered by Claude)</h3>
+      <div class="explanation-content">
+        {{ explanation
+          | replace('**Why this prediction:**', '<strong>🔍 Why this prediction:</strong>')
+          | replace('**Immediate care tips:**', '<strong>💊 Immediate care tips:</strong>')
+          | replace('**Important warning:**', '<strong>⚠️ Important warning:</strong>')
+          | safe }}
+      </div>
+    </div>
+
+    <!-- Follow-up RAG -->
+    <div class="followup-box no-print">
+      <h3>❓ Ask a follow-up question</h3>
+      <div class="rag-box">
+        <input type="text" id="followupQ" placeholder="e.g. How long will this last? Can I go to work?">
+        <button class="btn btn-secondary" onclick="askFollowup()">Ask AI</button>
+      </div>
+      <div id="followupAnswer" class="rag-answer hidden"></div>
+    </div>
+  </div>
+
+  <!-- Medicines -->
+  <div class="card">
+    <h2>💊 Temporary Medicine Suggestions</h2>
+    <div class="medicine-warning">⚠️ {{ medicine_note }}</div>
+    <table class="medicine-table">
+      <thead>
+        <tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th></tr>
+      </thead>
+      <tbody>
+        {% for med in medicines %}
+        <tr>
+          <td><strong>{{ med.name }}</strong></td>
+          <td>{{ med.dosage }}</td>
+          <td>{{ med.frequency }}</td>
+          <td>{{ med.duration }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Medical Camps -->
+  <div class="card">
+    <h2>🏕️ Free Government Medical Camps Nearby</h2>
+    <div class="camps-grid">
+      {% for camp in camps %}
+      <div class="camp-card">
+        <div class="camp-name">{{ camp.name }}</div>
+        <div class="camp-detail">📍 {{ camp.location }}</div>
+        <div class="camp-detail">📅 {{ camp.date }}</div>
+        <div class="camp-detail">⏰ {{ camp.time }}</div>
+        <div class="camp-detail">🏥 {{ camp.services }}</div>
+        <div class="camp-detail">📞 {{ camp.contact }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="card text-center no-print">
+    <h2>📄 Save Your Consultation</h2>
+    <p style="margin-bottom:16px;">Download or share your complete consultation summary.</p>
+    <div class="action-buttons">
+      <a href="/download_receipt" class="btn btn-primary">⬇️ Download PDF</a>
+      <button onclick="window.print()" class="btn btn-secondary">🖨️ Print Receipt</button>
+      <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-whatsapp">📱 Share on WhatsApp</a>
+      <a href="/" class="btn btn-secondary">🔄 New Consultation</a>
+      <a href="/chat" class="btn btn-secondary">💬 Continue in AI Chat</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let darkMode = localStorage.getItem('darkMode') === 'true';
+if (darkMode) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('darkBtn').textContent = '☀️';
+}
+function toggleDark() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  document.getElementById('darkBtn').textContent = darkMode ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', darkMode);
+}
+
+async function askFollowup() {
+  const question = document.getElementById('followupQ').value.trim();
+  if (!question) return;
+  const answerDiv = document.getElementById('followupAnswer');
+  answerDiv.classList.remove('hidden');
+  answerDiv.innerHTML = '<span class="loading">🧠 AI is thinking...</span>';
+  try {
+    const res = await fetch('/rag/ask', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        question,
+        symptoms: {{ symptoms | tojson }},
+        disease: "{{ disease }}"
+      })
+    });
+    const data = await res.json();
+    answerDiv.innerHTML = `<div class="rag-result"><strong>🤖 AI Answer:</strong><br>${data.answer}</div>`;
+  } catch(e) {
+    answerDiv.innerHTML = '<span class="error">Could not get answer. Please try again.</span>';
+  }
+}
+</script>
+</body>
+</html>

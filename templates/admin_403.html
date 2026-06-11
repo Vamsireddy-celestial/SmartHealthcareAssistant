@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Access Denied</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f0f4f8;">
+  <div style="text-align:center;background:#fff;padding:48px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);max-width:440px;">
+    <div style="font-size:4rem;margin-bottom:16px;">🚫</div>
+    <h1 style="color:#b91c1c;font-size:1.8rem;margin-bottom:8px;">Access Denied</h1>
+    <p style="color:#6b7280;margin-bottom:8px;">Your role <strong>{{ admin_role }}</strong> does not have permission for:</p>
+    <div style="background:#fee2e2;border-radius:8px;padding:10px 16px;margin:16px 0;color:#b91c1c;font-weight:700;">
+      {{ required.replace('_',' ').title() }}
+    </div>
+    <p style="color:#9ca3af;font-size:.88rem;margin-bottom:24px;">Contact your Super Admin to request access.</p>
+    <a href="{{ url_for('admin_dashboard') }}" style="background:#1a2b4a;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+.admin-header{background:#1a2b4a;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;}
+.admin-header .brand{color:#fff;font-size:1.1rem;font-weight:700;}
+.admin-header .links{display:flex;gap:14px;align-items:center;}
+.admin-header a{color:#93c5fd;text-decoration:none;font-size:0.9rem;}
+.admin-header a:hover{color:#fff;}
+.logout-btn{background:#ef4444;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+[data-theme="dark"] .stat-card{background:#1e293b;}
+.stat-number{font-size:2rem;font-weight:800;color:#2563eb;}
+.stat-label{font-size:.85rem;color:#6b7280;margin-top:4px;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+.chart-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+[data-theme="dark"] .chart-card{background:#1e293b;}
+.chart-card h3{font-size:1rem;margin-bottom:14px;color:#1a2b4a;}
+[data-theme="dark"] .chart-card h3{color:#e2e8f0;}
+.badge{padding:3px 10px;border-radius:20px;font-size:.8rem;font-weight:600;}
+.badge-green{background:#dcfce7;color:#16a34a;}
+.badge-red{background:#fee2e2;color:#b91c1c;}
+.badge-blue{background:#dbeafe;color:#1d4ed8;}
+.action-btn{padding:5px 12px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;text-decoration:none;display:inline-block;}
+.btn-danger{background:#fee2e2;color:#b91c1c;}
+.btn-toggle{background:#dbeafe;color:#1d4ed8;}
+.add-form{background:#f8faff;border:1.5px dashed #93c5fd;border-radius:10px;padding:20px;margin-bottom:20px;}
+[data-theme="dark"] .add-form{background:#1e3a5f;}
+.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.add-form label{font-size:.85rem;font-weight:600;color:#374151;display:block;margin-bottom:4px;}
+[data-theme="dark"] .add-form label{color:#cbd5e1;}
+.add-form input{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:.9rem;outline:none;}
+.flash-msg{padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:.9rem;font-weight:600;}
+.flash-success{background:#dcfce7;color:#16a34a;border:1px solid #86efac;}
+.flash-info{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;}
+.section-title{font-size:1.1rem;font-weight:700;color:#1a2b4a;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #eff6ff;}
+[data-theme="dark"] .section-title{color:#e2e8f0;border-bottom-color:#334155;}
+@media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr;}.charts-grid{grid-template-columns:1fr;}.add-form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="admin-header">
+  <div class="brand">🏥 Smart Healthcare — Admin Panel</div>
+  <div class="links">
+    <span style="color:#93c5fd;font-size:.9rem;">👤 {{ admin_name }} <span style="background:rgba(255,255,255,.15);padding:3px 8px;border-radius:10px;font-size:.75rem;margin-left:4px;">{{ role_label }}</span></span>
+    {% if "manage_users" in permissions %}<a href="{{ url_for('admin_users') }}" style="background:#7c3aed;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;">👥 Users</a>{% endif %}<a href="/">🌐 View App</a>
+    <button onclick="toggleDark()" id="darkBtn" style="background:transparent;border:none;color:#93c5fd;cursor:pointer;font-size:1.1rem;">🌙</button>
+    <a href="{{ url_for('admin_change_password') }}" style="background:#7c3aed;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;">🔑 Change Password</a>
+    <a href="{{ url_for('admin_logout') }}" class="logout-btn">🚪 Logout</a>
+  </div>
+</div>
+
+<div class="container" style="padding-top:24px;">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.total_consultations }}</div>
+      <div class="stat-label">Total Consultations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:#16a34a;">{{ stats.today }}</div>
+      <div class="stat-label">Today's Consultations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:#f59e0b;">{{ stats.active_camps }}</div>
+      <div class="stat-label">Active Camps</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:#8b5cf6;font-size:1.1rem;">{{ stats.top_disease }}</div>
+      <div class="stat-label">Most Common Disease</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>📊 Disease Distribution</h3>
+      <canvas id="diseaseChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>👥 Age Group Distribution</h3>
+      <canvas id="ageChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- Camps Management -->
+  <div class="card">
+    <div class="section-title">🏕️ Manage Medical Camps</div>
+    <div class="add-form">
+      <strong style="display:block;margin-bottom:12px;color:#1a2b4a;">➕ Add New Camp</strong>
+      <form method="POST" action="{{ url_for('admin_add_camp') }}">
+        <div class="add-form-grid">
+          <div class="form-group">
+            <label>Camp Name *</label>
+            <input type="text" name="name" placeholder="e.g. Health Awareness Camp" required>
+          </div>
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text" name="location" placeholder="Area, City" required>
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="text" name="time" placeholder="e.g. 9:00 AM - 4:00 PM">
+          </div>
+          <div class="form-group">
+            <label>Services</label>
+            <input type="text" name="services" placeholder="Free consultation, Blood test">
+          </div>
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input type="text" name="contact" placeholder="Phone number">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:14px;">➕ Add Camp</button>
+      </form>
+    </div>
+
+    <table class="medicine-table">
+      <thead>
+        <tr><th>Camp Name</th><th>Location</th><th>Date</th><th>Time</th><th>Services</th><th>Contact</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for camp in camps %}
+        <tr>
+          <td><strong>{{ camp.name }}</strong></td>
+          <td>{{ camp.location }}</td>
+          <td>{{ camp.date }}</td>
+          <td>{{ camp.time }}</td>
+          <td>{{ camp.services }}</td>
+          <td>{{ camp.contact }}</td>
+          <td>
+            {% if camp.active %}<span class="badge badge-green">Active</span>
+            {% else %}<span class="badge badge-red">Hidden</span>{% endif %}
+          </td>
+          <td style="white-space:nowrap;">
+            <a href="{{ url_for('admin_toggle_camp', camp_id=camp.id) }}" class="action-btn btn-toggle">
+              {% if camp.active %}Hide{% else %}Show{% endif %}
+            </a>
+            <a href="{{ url_for('admin_delete_camp', camp_id=camp.id) }}"
+               class="action-btn btn-danger"
+               onclick="return confirm('Delete this camp?')">Delete</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:20px;">No camps yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Consultations Log -->
+  <div class="card">
+    <div class="section-title">📋 Recent Consultations</div>
+    {% if consultation_log %}
+    <table class="medicine-table" style="font-size:.85rem;">
+      <thead>
+        <tr><th>Token</th><th>Patient</th><th>Age</th><th>Gender</th><th>Disease</th><th>Specialist</th><th>Severity</th><th>Confidence</th><th>Date & Time</th></tr>
+      </thead>
+      <tbody>
+        {% for c in consultation_log %}
+        <tr>
+          <td><span class="badge badge-blue">{{ c.token }}</span></td>
+          <td><strong>{{ c.name }}</strong></td>
+          <td>{{ c.age }}</td>
+          <td>{{ c.gender }}</td>
+          <td>{{ c.disease }}</td>
+          <td>{{ c.specialization }}</td>
+          <td>
+            {% if c.severity == 'Severe' %}<span class="badge badge-red">Severe</span>
+            {% elif c.severity == 'Moderate' %}<span class="badge" style="background:#fef3c7;color:#92400e;">Moderate</span>
+            {% else %}<span class="badge badge-green">Mild</span>{% endif %}
+          </td>
+          <td>{{ c.confidence }}</td>
+          <td>{{ c.datetime }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center;color:#9ca3af;padding:30px;">
+      No consultations yet. They appear here once patients use the app.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Security Status -->
+  <div class="card" style="background:#f8faff;border:1.5px solid #bfdbfe;">
+    <div class="section-title">🔒 Security Status</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.9rem;">
+      <div>✅ Admin login protected</div>
+      <div>✅ Session-based authentication</div>
+      <div>✅ Input validation on all forms</div>
+      <div>✅ Rate limiting (15 req/min)</div>
+      <div>✅ API key in .env (not in code)</div>
+      <div>✅ Error messages sanitized</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Dark mode
+let darkMode = localStorage.getItem('darkMode') === 'true';
+if (darkMode) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent='☀️'; }
+function toggleDark() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode?'dark':'light');
+  document.getElementById('darkBtn').textContent = darkMode?'☀️':'🌙';
+  localStorage.setItem('darkMode', darkMode);
+}
+
+// Chart data from Flask
+const diseaseData = {{ stats.disease_counts | tojson }};
+const ageData     = {{ stats.age_groups | tojson }};
+
+// Disease Bar Chart
+new Chart(document.getElementById('diseaseChart'), {
+  type: 'bar',
+  data: {
+    labels: Object.keys(diseaseData),
+    datasets: [{
+      label: 'Consultations',
+      data: Object.values(diseaseData),
+      backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#14b8a6'],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+  }
+});
+
+// Age Pie Chart
+new Chart(document.getElementById('ageChart'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(ageData),
+    datasets: [{
+      data: Object.values(ageData),
+      backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+</script>
+</body>
+</html>

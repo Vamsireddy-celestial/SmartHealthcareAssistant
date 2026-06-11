@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Chat - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-brand">🏥 Smart Healthcare Assistant</div>
+  <div class="nav-links">
+    <a href="/">← Home</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card chat-card">
+    <h2>💬 Chat with AI Health Assistant</h2>
+    <p class="subtitle">Describe your symptoms naturally. The AI will understand and guide you.</p>
+
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-msg assistant">
+        <div class="msg-bubble">
+          👋 Hello! I'm your Smart Healthcare Assistant powered by Claude AI.<br><br>
+          Tell me how you're feeling. You can describe your symptoms naturally, like:<br>
+          <em>"I have been having chest pain and feeling breathless since this morning"</em><br><br>
+          I'll help you understand your symptoms and guide you to the right specialist.
+        </div>
+      </div>
+    </div>
+
+    <div class="extracted-box" id="extractedBox" style="display:none">
+      <strong>🔍 Symptoms detected:</strong>
+      <div id="extractedList"></div>
+      <a href="/" id="analyzeLink" class="btn btn-primary btn-sm">Analyze These Symptoms →</a>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea id="chatInput" placeholder="Describe your symptoms... (Press Enter to send)" rows="2"></textarea>
+      <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="quick-prompts">
+      <span>Quick:</span>
+      <button class="quick-btn" onclick="sendQuick('I have fever and headache since yesterday')">Fever + Headache</button>
+      <button class="quick-btn" onclick="sendQuick('I have chest pain and shortness of breath')">Chest Pain</button>
+      <button class="quick-btn" onclick="sendQuick('I have skin rash and itching')">Skin Rash</button>
+      <button class="quick-btn" onclick="sendQuick('I feel very tired and dizzy')">Fatigue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let allExtracted = [];
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  appendMessage('user', message);
+  input.value = '';
+  appendMessage('assistant', '<span class="typing">AI is thinking...</span>');
+
+  try {
+    const res = await fetch('/chat/message', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message})
+    });
+    const data = await res.json();
+
+    // Replace typing indicator with real reply
+    const msgs = document.querySelectorAll('.chat-msg.assistant');
+    const last = msgs[msgs.length - 1];
+    last.querySelector('.msg-bubble').innerHTML = data.reply.replace(/\n/g, '<br>');
+
+    // Show extracted symptoms
+    if (data.extracted_symptoms && data.extracted_symptoms.length > 0) {
+      data.extracted_symptoms.forEach(s => {
+        if (!allExtracted.includes(s)) allExtracted.push(s);
+      });
+      showExtracted();
+    }
+  } catch(e) {
+    const msgs = document.querySelectorAll('.chat-msg.assistant');
+    const last = msgs[msgs.length - 1];
+    last.querySelector('.msg-bubble').innerHTML = 'Sorry, I could not connect. Please try again.';
+  }
+}
+
+function appendMessage(role, content) {
+  const window = document.getElementById('chatWindow');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = `<div class="msg-bubble">${content}</div>`;
+  window.appendChild(div);
+  window.scrollTop = window.scrollHeight;
+}
+
+function showExtracted() {
+  const box = document.getElementById('extractedBox');
+  const list = document.getElementById('extractedList');
+  box.style.display = 'block';
+  list.innerHTML = allExtracted.map(s =>
+    `<span class="tag">${s}</span>`
+  ).join('');
+
+  // Build URL with symptoms for main analysis
+  const params = allExtracted.map(s => `symptoms=${encodeURIComponent(s)}`).join('&');
+  document.getElementById('analyzeLink').href = `/?${params}`;
+}
+
+function sendQuick(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+// Enter to send
+document.getElementById('chatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+</script>
+</body>
+</html>

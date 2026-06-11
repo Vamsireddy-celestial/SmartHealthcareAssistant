@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a2b4a, #2563eb); }
+.login-card { background: #fff; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-logo { text-align: center; margin-bottom: 24px; }
+.login-logo h1 { font-size: 1.4rem; color: #1a2b4a; margin-top: 8px; }
+.login-logo p { color: #6b7280; font-size: 0.9rem; }
+.login-card .form-group { margin-bottom: 18px; }
+.login-card .form-group label { font-weight: 600; color: #374151; font-size: 0.9rem; display: block; margin-bottom: 6px; }
+.login-card .form-group input { width: 100%; padding: 12px 14px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; outline: none; }
+.login-card .form-group input:focus { border-color: #2563eb; }
+.login-btn { width: 100%; padding: 13px; background: #1a2b4a; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
+.login-btn:hover { background: #2563eb; }
+.error-box { background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 0.9rem; }
+.back-link { text-align: center; margin-top: 16px; }
+.back-link a { color: #6b7280; font-size: 0.9rem; text-decoration: none; }
+.back-link a:hover { color: #2563eb; }
+.hint-box { background: #eff6ff; border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 0.82rem; color: #374151; }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div style="font-size:2.5rem">🏥</div>
+      <h1>Admin Panel</h1>
+      <p>Smart Healthcare Assistant</p>
+    </div>
+
+    {% if error %}
+    <div class="error-box">❌ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter username" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="login-btn">🔐 Login to Admin Panel</button>
+    </form>
+
+    <div class="hint-box">
+      💡 Default credentials:<br>
+      Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>Health@Admin2026</strong><br>
+      <small>Change these in your .env file for security.</small>
+    </div>
+
+    <div class="back-link">
+      <a href="/">← Back to App</a>
+      &nbsp;|&nbsp;
+      <a href="{{ url_for('admin_forgot_password') }}">🔑 Forgot Password?</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

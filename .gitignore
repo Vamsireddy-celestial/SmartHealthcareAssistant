@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+*.pkl
+models/
+*.pdf
+.vscode/
+*.egg-info/
+dist/
+build/
+.DS_Store
+# Keep data/admin_users.json OUT of git (sensitive)
+# But data/ folder itself must exist

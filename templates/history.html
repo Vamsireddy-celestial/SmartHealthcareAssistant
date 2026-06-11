@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-brand">🏥 Smart Healthcare Assistant</div>
+  <div class="nav-links">
+    <button class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</button>
+    <a href="/">← Home</a>
+    <a href="/chat">💬 AI Chat</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card">
+    <h2>📋 Your Consultation History</h2>
+    <p class="subtitle">Your last 5 consultations from this session.</p>
+
+    {% if history %}
+    <div class="history-list">
+      {% for h in history %}
+      <div class="history-item">
+        <div class="history-header">
+          <div>
+            <span class="badge badge-blue">{{ h.token }}</span>
+            <strong style="margin-left:10px;">{{ h.disease }}</strong>
+            <span class="confidence-badge" style="margin-left:8px;">{{ h.confidence }}</span>
+          </div>
+          <div style="color:#6b7280;font-size:.85rem;">{{ h.datetime }}</div>
+        </div>
+        <div class="history-body">
+          <div><strong>Patient:</strong> {{ h.name }} | {{ h.age }} yrs | {{ h.gender }}</div>
+          <div><strong>Symptoms:</strong> {{ h.symptoms | join(', ') }}</div>
+          <div><strong>Specialist:</strong> {{ h.specialization }}</div>
+          <div><strong>Severity:</strong> {{ h.severity }} | <strong>Duration:</strong> {{ h.duration }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:40px;color:#9ca3af;">
+      <div style="font-size:3rem;">📋</div>
+      <p style="margin-top:12px;">No consultation history yet.</p>
+      <a href="/" class="btn btn-primary" style="margin-top:16px;">Start a Consultation</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+let darkMode = localStorage.getItem('darkMode') === 'true';
+if (darkMode) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent='☀️'; }
+function toggleDark() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme',darkMode?'dark':'light');
+  document.getElementById('darkBtn').textContent=darkMode?'☀️':'🌙';
+  localStorage.setItem('darkMode',darkMode);
+}
+</script>
+</body>
+</html>
