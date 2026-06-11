@@ -50,7 +50,7 @@ class DiseasePredictor:
     def train(self, data_path=None):
         if data_path is None:
             base = os.path.dirname(os.path.abspath(__file__))
-            data_path = os.path.join(base, 'data', 'training_data.csv')
+            data_path = os.path.join(base, 'data', 'medical_training_data.csv')
         print("Training ML model...")
         df = pd.read_csv(data_path)
         # CSV columns: symptoms (quoted comma-separated), disease, specialization
