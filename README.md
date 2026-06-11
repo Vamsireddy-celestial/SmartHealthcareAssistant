@@ -94,8 +94,8 @@ SmartHealthcareAssistant/
 
 ## 👨‍💻 Developer
 
-**B. Ch. Vamsireddy**
-- GitHub: [github.com/vamsireddyboyi](https://github.com/vamsireddyboyi)
+**B. Chandra Vamsireddy**
+- GitHub: [github.com/vamsireddyboyi](https://github.com/Vamsireddy-celestial)
 - College: Dr. Lankapalli Bullayya College of Engineering, Visakhapatnam
 - Degree: B.Tech CSE (Lateral Entry) 2023–2026
 
