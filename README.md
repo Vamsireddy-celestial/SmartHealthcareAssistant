@@ -2,7 +2,7 @@
 
 An AI-powered healthcare guidance web application built with **Flask**, **Claude API**, **RAG**, and **Machine Learning**.
 
-Developed by **B. Ch. Vamsireddy** — Final Year B.Tech CSE, Dr. Lankapalli Bullayya College of Engineering, Visakhapatnam.
+Developed by **B. Chandra Vamsireddy** — Software Developer | B.Tech (CSE) Graduate | AI & Machine Learning Enthusiast.
 
 ---
 
