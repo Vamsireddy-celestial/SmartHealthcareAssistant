@@ -1,0 +1,133 @@
+symptoms,disease,specialization
+"fever,cough,headache,body ache,runny nose",Common Cold,General Physician
+"fever,cough,sore throat,runny nose,sneezing",Common Cold,General Physician
+"cough,sneezing,runny nose,congestion,mild fever",Common Cold,General Physician
+"blocked nose,watery eyes,sneezing,mild headache",Common Cold,General Physician
+"runny nose,sore throat,cough,fatigue",Common Cold,General Physician
+"fever,chills,body ache,fatigue,cough",Flu,General Physician
+"high fever,severe body ache,headache,fatigue",Flu,General Physician
+"fever,cough,sore throat,muscle pain,chills",Flu,General Physician
+"sudden fever,headache,fatigue,loss of appetite",Flu,General Physician
+"fever,dry cough,shortness of breath,fatigue",COVID-19,General Physician
+"loss of smell,loss of taste,fever,dry cough",COVID-19,General Physician
+"fever,body ache,loss of smell,sore throat",COVID-19,General Physician
+"headache,nausea,dizziness,vomiting,sensitivity to light",Migraine,Neurologist
+"severe headache,throbbing pain,nausea,blurred vision",Migraine,Neurologist
+"one sided headache,sensitivity to sound,nausea",Migraine,Neurologist
+"pulsating headache,visual disturbances,vomiting",Migraine,Neurologist
+"chest pain,shortness of breath,sweating,arm pain",Cardiac Issue,Cardiologist
+"chest tightness,heart palpitations,dizziness,fatigue",Cardiac Issue,Cardiologist
+"chest pain,left arm pain,jaw pain,nausea",Cardiac Issue,Cardiologist
+"irregular heartbeat,chest discomfort,shortness of breath",Cardiac Issue,Cardiologist
+"rash,itching,redness,swelling,hives",Skin Allergy,Dermatologist
+"itchy skin,skin rash,redness,bumps",Skin Allergy,Dermatologist
+"skin irritation,itching,redness,dryness",Skin Allergy,Dermatologist
+"hives,swelling,itching,skin inflammation",Skin Allergy,Dermatologist
+"nausea,vomiting,stomach pain,diarrhoea,cramps",Gastroenteritis,Gastroenterologist
+"loose motions,vomiting,stomach cramps,fever",Gastroenteritis,Gastroenterologist
+"watery diarrhoea,nausea,abdominal pain",Gastroenteritis,Gastroenterologist
+"vomiting,diarrhoea,dehydration,weakness",Gastroenteritis,Gastroenterologist
+"joint pain,swelling,stiffness,morning stiffness",Arthritis,Rheumatologist
+"knee pain,joint inflammation,swelling,difficulty walking",Arthritis,Rheumatologist
+"joint pain,warmth,redness,swelling",Arthritis,Rheumatologist
+"multiple joint pain,fatigue,stiffness after rest",Arthritis,Rheumatologist
+"fatigue,weakness,pale skin,dizziness,shortness of breath",Anaemia,General Physician
+"tiredness,pale complexion,cold hands,brittle nails",Anaemia,General Physician
+"fatigue,breathlessness,rapid heartbeat,weakness",Anaemia,General Physician
+"cough,wheezing,shortness of breath,chest tightness",Asthma,Pulmonologist
+"wheezing,breathlessness,coughing at night,chest tightness",Asthma,Pulmonologist
+"difficulty breathing,whistling sound,cough,breathlessness",Asthma,Pulmonologist
+"eye redness,itching,discharge,watering eyes",Conjunctivitis,Ophthalmologist
+"pink eye,eye pain,sensitivity to light,discharge",Conjunctivitis,Ophthalmologist
+"red eyes,eye irritation,crusty eyes,discharge",Conjunctivitis,Ophthalmologist
+"ear pain,hearing loss,discharge from ear,fever",Ear Infection,ENT Specialist
+"ear ache,muffled hearing,ringing in ear,pain",Ear Infection,ENT Specialist
+"sore throat,difficulty swallowing,hoarseness,fever",Throat Infection,ENT Specialist
+"throat pain,swollen tonsils,fever,bad breath",Throat Infection,ENT Specialist
+"burning urination,frequent urination,cloudy urine,pelvic pain",UTI,Urologist
+"painful urination,urgent urination,lower abdominal pain",UTI,Urologist
+"frequent urination,excessive thirst,fatigue,blurred vision",Diabetes,Endocrinologist
+"increased hunger,weight loss,frequent urination,slow healing",Diabetes,Endocrinologist
+"high blood pressure,headache,dizziness,chest pain",Hypertension,Cardiologist
+"severe headache,blurred vision,chest pain,difficulty breathing",Hypertension,Cardiologist
+"acid reflux,heartburn,chest burning,regurgitation",GERD,Gastroenterologist
+"heartburn after eating,sour taste,chest discomfort,bloating",GERD,Gastroenterologist
+"back pain,muscle stiffness,difficulty moving,spasm",Back Pain,Orthopedist
+"lower back pain,radiating leg pain,numbness,tingling",Back Pain,Orthopedist
+"severe back pain,sciatica,weakness in legs",Back Pain,Orthopedist
+"skin acne,pimples,blackheads,oily skin,inflammation",Acne,Dermatologist
+"facial acne,whiteheads,cystic acne,skin redness",Acne,Dermatologist
+"dry skin,flaky skin,itchy patches,skin scaling",Eczema,Dermatologist
+"skin rash,dry patches,itching,inflammation,thickened skin",Eczema,Dermatologist
+"yellow skin,yellow eyes,dark urine,fatigue,nausea",Jaundice,Gastroenterologist
+"jaundice,abdominal pain,loss of appetite,weakness",Jaundice,Gastroenterologist
+"fever,headache,muscle pain,joint pain,rash",Dengue,General Physician
+"high fever,severe headache,pain behind eyes,rash",Dengue,General Physician
+"fever,chills,sweating,headache,muscle aches",Malaria,General Physician
+"periodic fever,chills,sweating,nausea,vomiting",Malaria,General Physician
+"fever,abdominal pain,diarrhoea,headache,weakness",Typhoid,General Physician
+"sustained fever,loss of appetite,abdominal pain,rash",Typhoid,General Physician
+"cough,fever,night sweats,weight loss,fatigue",Tuberculosis,Pulmonologist
+"persistent cough,blood in sputum,chest pain,weakness",Tuberculosis,Pulmonologist
+"anxiety,restlessness,rapid heartbeat,sweating,panic",Anxiety Disorder,Psychiatrist
+"excessive worry,sleep problems,irritability,concentration issues",Anxiety Disorder,Psychiatrist
+"sadness,loss of interest,fatigue,sleep changes,hopelessness",Depression,Psychiatrist
+"low mood,worthlessness,appetite changes,concentration issues",Depression,Psychiatrist
+"frequent urination at night,weak urine stream,difficulty urinating",Prostate Issues,Urologist
+"incomplete bladder emptying,urgency,dribbling urine",Prostate Issues,Urologist
+"irregular periods,pelvic pain,bloating,hormonal changes",PCOD,Gynaecologist
+"heavy periods,acne,weight gain,excess hair growth",PCOD,Gynaecologist
+"painful periods,severe cramps,nausea,back pain",Dysmenorrhea,Gynaecologist
+"menstrual cramps,heavy bleeding,pelvic pain,fatigue",Dysmenorrhea,Gynaecologist
+"knee pain,swelling,difficulty climbing stairs,stiffness",Knee Problem,Orthopedist
+"knee clicking,locking,instability,pain on movement",Knee Problem,Orthopedist
+"shoulder pain,limited movement,stiffness,pain at night",Shoulder Problem,Orthopedist
+"neck pain,stiffness,headache,arm numbness",Cervical Spondylosis,Orthopedist
+"neck ache,shoulder pain,tingling in hands,dizziness",Cervical Spondylosis,Orthopedist
+"frequent headaches,concentration problems,sleep issues,stress",Tension Headache,Neurologist
+"dull headache,pressure around head,neck stiffness",Tension Headache,Neurologist
+"abdominal pain,bloating,constipation,diarrhoea,gas",IBS,Gastroenterologist
+"alternating constipation and diarrhoea,cramping,bloating",IBS,Gastroenterologist
+"hair loss,thinning hair,bald patches,scalp itching",Alopecia,Dermatologist
+"excessive hair fall,receding hairline,scalp problems",Alopecia,Dermatologist
+"dry eyes,eye strain,blurred vision,eye fatigue",Eye Strain,Ophthalmologist
+"nasal congestion,facial pain,headache,thick nasal discharge",Sinusitis,ENT Specialist
+"sinus pressure,pain around eyes,blocked nose,post nasal drip",Sinusitis,ENT Specialist
+"itchy eyes,sneezing,runny nose,congestion,watery eyes",Allergic Rhinitis,ENT Specialist
+"seasonal allergies,nasal congestion,itchy throat,sneezing",Allergic Rhinitis,ENT Specialist
+"burning stomach,pain after eating,nausea,bloating",Gastritis,Gastroenterologist
+"stomach inflammation,loss of appetite,indigestion,vomiting",Gastritis,Gastroenterologist
+"swollen lymph nodes,fever,sore throat,fatigue",Tonsillitis,ENT Specialist
+"severe sore throat,difficulty swallowing,swollen glands,fever",Tonsillitis,ENT Specialist
+"weight gain,fatigue,cold intolerance,dry skin,hair loss",Hypothyroidism,Endocrinologist
+"slow metabolism,constipation,depression,muscle weakness",Hypothyroidism,Endocrinologist
+"weight loss,rapid heartbeat,heat intolerance,sweating",Hyperthyroidism,Endocrinologist
+"anxiety,tremors,frequent bowel movements,eye bulging",Hyperthyroidism,Endocrinologist
+"chest pain,shortness of breath,cough,fever,chills",Pneumonia,Pulmonologist
+"productive cough,high fever,breathing difficulty,chest pain",Pneumonia,Pulmonologist
+"chronic cough,mucus production,shortness of breath,wheezing",COPD,Pulmonologist
+"sudden dizziness,loss of balance,nausea,ringing in ears",Vertigo,ENT Specialist
+"spinning sensation,difficulty standing,nausea,hearing loss",Vertigo,ENT Specialist
+"kidney pain,back pain,frequent urination,blood in urine",Kidney Stones,Urologist
+"severe flank pain,painful urination,nausea,vomiting",Kidney Stones,Urologist
+"swollen ankles,fatigue,shortness of breath,weight gain",Heart Failure,Cardiologist
+"jaundice,fatigue,abdominal swelling,dark urine,nausea",Liver Disease,Gastroenterologist
+"itchy scalp,dandruff,flaky scalp,scalp redness",Dandruff,Dermatologist
+"burning sensation,numbness,tingling feet,pain at night",Neuropathy,Neurologist
+"high fever,stiff neck,sensitivity to light,severe headache",Meningitis,Neurologist
+"fever,swollen lymph nodes,sore throat,fatigue,rash",Viral Fever,General Physician
+"body pain,high temperature,weakness,loss of appetite",Viral Fever,General Physician
+"blood in stool,rectal pain,anal itching,painful bowel",Piles,Gastroenterologist
+"hemorrhoids,rectal bleeding,discomfort,swelling near anus",Piles,Gastroenterologist
+"bloating,gas,abdominal discomfort,belching,indigestion",Indigestion,Gastroenterologist
+"stomach discomfort after eating,fullness,nausea,belching",Indigestion,Gastroenterologist
+"dizziness on standing,low blood pressure,fainting,weakness",Low Blood Pressure,General Physician
+"wrist pain,numbness in fingers,tingling,weakness in hand",Carpal Tunnel Syndrome,Orthopedist
+"foot pain,heel pain,pain while walking,arch pain",Plantar Fasciitis,Orthopedist
+"ringworm,circular rash,itchy ring,skin fungus",Ringworm,Dermatologist
+"psoriasis,silvery scales,red patches,dry cracked skin",Psoriasis,Dermatologist
+"painful joints,red skin rash on face,sensitivity to sunlight",Lupus,Rheumatologist
+"butterfly rash,joint pain,hair loss,mouth sores",Lupus,Rheumatologist
+"mouth sores,ulcers,painful lesions,difficulty eating",Mouth Ulcers,General Physician
+"toothache,swollen gums,jaw pain,sensitivity to temperature",Dental Problem,Dentist
+"bleeding gums,tooth sensitivity,bad breath,gum pain",Dental Problem,Dentist
