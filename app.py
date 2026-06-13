@@ -415,6 +415,25 @@ MEDICAL_CAMPS = [
 
 consultation_log = []
 
+# ── Patient User Store ────────────────────────────────────────────────────────
+import hashlib, secrets as _secrets
+
+PATIENT_USERS = {}
+
+def _hash_pwd(password):
+    salt   = _secrets.token_hex(16)
+    hashed = hashlib.sha256((salt + password).encode()).hexdigest()
+    return f"{salt}:{hashed}"
+
+def _verify_pwd(password, stored):
+    try:
+        salt, hashed = stored.split(':')
+        return hashlib.sha256((salt + password).encode()).hexdigest() == hashed
+    except:
+        return False
+
+PATIENT_OTP_STORE = {}
+
 def gen_token(): return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 def sanitize(t, n=200): return str(t).strip()[:n] if t else ''
 
@@ -437,8 +456,12 @@ def build_whatsapp_url(name, token, disease, specialization, symptoms):
 
 @app.route('/')
 def index():
+    if not session.get('patient_logged_in'):
+        return redirect(url_for('patient_login'))
     symptoms_list = predictor.get_all_symptoms() if predictor else []
-    return render_template('index.html', symptoms_list=symptoms_list)
+    return render_template('index.html',
+        symptoms_list=symptoms_list,
+        patient_name=session.get('patient_name', 'Patient'))
 
 @app.route('/predict', methods=['POST'])
 @rate_limit(max_calls=15, window=60)
@@ -907,7 +930,127 @@ def admin_delete_user(username):
     flash(('✅ ' if success else '❌ ') + msg, 'success' if success else 'error')
     return redirect(url_for('admin_users'))
 
+# ════════════════════════════════════════════════════════════════════════════
+# PATIENT AUTH ROUTES
+# ════════════════════════════════════════════════════════════════════════════
 
+def patient_login_required(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if not session.get('patient_logged_in'):
+            return redirect(url_for('patient_login'))
+        return f(*args, **kwargs)
+    return wrapped
+
+@app.route('/signup', methods=['GET', 'POST'])
+def patient_signup():
+    error = None
+    if session.get('patient_logged_in'):
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        name     = request.form.get('name', '').strip()
+        email    = request.form.get('email', '').strip().lower()
+        phone    = request.form.get('phone', '').strip()
+        password = request.form.get('password', '')
+        confirm  = request.form.get('confirm_password', '')
+        if not name or len(name) < 2:
+            error = 'Please enter your full name.'
+        elif any(char.isdigit() for char in name):
+            error = 'Name cannot contain numbers.'
+        elif not email or '@' not in email:
+            error = 'Please enter a valid email address.'
+        elif email in PATIENT_USERS:
+            error = 'Email already registered. Please login.'
+        elif len(password) < 6:
+            error = 'Password must be at least 6 characters.'
+        elif password != confirm:
+            error = 'Passwords do not match.'
+        elif not phone.isdigit() or len(phone) != 10:
+            error = 'Please enter a valid 10-digit phone number.'
+        else:
+            PATIENT_USERS[email] = {
+                'name': name, 'email': email, 'phone': phone,
+                'password': _hash_pwd(password),
+                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            session['patient_logged_in'] = True
+            session['patient_email']     = email
+            session['patient_name']      = name
+            flash(f"Welcome {name}! Account created successfully.", 'success')
+            return redirect(url_for('index'))
+    return render_template('patient_signup.html', error=error)
+
+@app.route('/login', methods=['GET', 'POST'])
+def patient_login():
+    error = None
+    if session.get('patient_logged_in'):
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        email    = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        user     = PATIENT_USERS.get(email)
+        if user and _verify_pwd(password, user['password']):
+            session['patient_logged_in'] = True
+            session['patient_email']     = email
+            session['patient_name']      = user['name']
+            flash(f"Welcome back, {user['name']}!", 'success')
+            return redirect(url_for('index'))
+        else:
+            error = 'Invalid email or password.'
+    return render_template('patient_login.html', error=error)
+
+@app.route('/patient-logout')
+def patient_logout():
+    session.pop('patient_logged_in', None)
+    session.pop('patient_email',     None)
+    session.pop('patient_name',      None)
+    session.pop('chat_history',      None)
+    session.pop('history',           None)
+    return redirect(url_for('patient_login'))
+
+@app.route('/patient-forgot-password', methods=['GET', 'POST'])
+def patient_forgot_password():
+    step  = request.args.get('step', '1')
+    error = None
+    if request.method == 'POST':
+        step = request.form.get('step', '1')
+        if step == '1':
+            email = request.form.get('email', '').strip().lower()
+            if email not in PATIENT_USERS:
+                error = 'Email not found. Please check and try again.'
+            else:
+                otp     = str(random.randint(100000, 999999))
+                expires = time.time() + 600
+                PATIENT_OTP_STORE[email] = {'otp': otp, 'expires': expires}
+                session['reset_patient_email'] = email
+                flash(f"OTP for demo: {otp}", 'success')
+                return redirect(url_for('patient_forgot_password', step='2'))
+        elif step == '2':
+            email        = session.get('reset_patient_email', '')
+            otp          = request.form.get('otp', '').strip()
+            new_password = request.form.get('new_password', '')
+            confirm      = request.form.get('confirm_password', '')
+            entry        = PATIENT_OTP_STORE.get(email)
+            if not entry:
+                error = 'OTP expired. Please start again.'
+            elif time.time() > entry['expires']:
+                error = 'OTP expired. Please request a new one.'
+                PATIENT_OTP_STORE.pop(email, None)
+            elif entry['otp'] != otp:
+                error = 'Invalid OTP. Please try again.'
+            elif len(new_password) < 6:
+                error = 'Password must be at least 6 characters.'
+            elif new_password != confirm:
+                error = 'Passwords do not match.'
+            else:
+                PATIENT_USERS[email]['password'] = _hash_pwd(new_password)
+                PATIENT_OTP_STORE.pop(email, None)
+                session.pop('reset_patient_email', None)
+                flash('Password reset successful! Please login.', 'success')
+                return redirect(url_for('patient_login'))
+    return render_template('patient_forgot_password.html',
+        step=step, error=error,
+        email=session.get('reset_patient_email', ''))
 @app.route('/translate', methods=['POST'])
 def translate_text():
     try:

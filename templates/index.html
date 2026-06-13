@@ -17,7 +17,9 @@
     <a href="/" data-en="Home" data-te="హోమ్">Home</a>
     <a href="/chat" data-en="💬 AI Chat" data-te="💬 AI చాట్">💬 AI Chat</a>
     <a href="/history" data-en="📋 History" data-te="📋 చరిత్ర">📋 History</a>
-    <a href="/admin/login" data-en="Admin" data-te="అడ్మిన్">Admin</a>
+    <span style="color:#93c5fd;font-size:.85rem;">👤 {{ patient_name }}</span>
+<a href="{{ url_for('patient_logout') }}" style="background:#ef4444;color:#fff;padding:6px 12px;border-radius:6px;font-size:.85rem;">Logout</a>
+<a href="/admin/login" data-en="Admin" data-te="అడ్మిన్">Admin</a>
   </div>
 </nav>
 
