@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Sign Up - Smart Healthcare Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2b4a,#2563eb);padding:20px 0;}
+.login-card{background:#fff;border-radius:16px;padding:40px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-logo{text-align:center;margin-bottom:22px;}
+.login-logo h1{font-size:1.3rem;color:#1a2b4a;margin-top:8px;}
+.login-logo p{color:#6b7280;font-size:.88rem;margin-top:2px;}
+.form-group{margin-bottom:14px;}
+.form-group label{font-weight:600;color:#374151;font-size:.88rem;display:block;margin-bottom:5px;}
+.form-group input,.form-group select{width:100%;padding:11px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.93rem;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:#2563eb;}
+.login-btn{width:100%;padding:13px;background:#1a2b4a;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:6px;}
+.login-btn:hover{background:#2563eb;}
+.error-box{background:#fee2e2;border:1px solid #fca5a5;color:#b91c1c;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.88rem;}
+.back-link{text-align:center;margin-top:16px;}
+.back-link a{color:#6b7280;font-size:.88rem;text-decoration:none;}
+.back-link a:hover{color:#2563eb;}
+.role-note{background:#eff6ff;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:.8rem;color:#1d4ed8;}
+.strength-bar{height:5px;border-radius:3px;background:#e5e7eb;margin-top:5px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:3px;transition:all .3s;width:0%;}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div style="font-size:2.3rem">🩺</div>
+      <h1>Staff Account Sign Up</h1>
+      <p>For Doctors & Viewers — Smart Healthcare Assistant</p>
+    </div>
+
+    <div class="role-note">
+      ℹ️ Self-signup is available for <strong>Doctor</strong> and <strong>Viewer</strong> roles only.
+      Admin / Super Admin access must be granted by an existing Super Admin via the Users panel.
+    </div>
+
+    <form method="POST" onsubmit="return validateForm()">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" name="name" placeholder="e.g. Dr. Ramesh Kumar" required>
+      </div>
+      <div class="form-group">
+        <label>Username *</label>
+        <input type="text" name="username" placeholder="e.g. ramesh_doc" minlength="3" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label>Role *</label>
+        <select name="role" required>
+          <option value="doctor">🟢 Doctor — View consultations</option>
+          <option value="viewer">🔵 Viewer — Dashboard view only</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password * (min 6 characters)</label>
+        <input type="password" name="password" id="pwd" placeholder="Create a password" required oninput="checkStrength(this.value)">
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password *</label>
+        <input type="password" name="confirm_password" id="cpwd" placeholder="Repeat password" required>
+        <div id="matchMsg" style="font-size:.8rem;margin-top:3px;"></div>
+      </div>
+      <button type="submit" class="login-btn">✅ Create Staff Account</button>
+    </form>
+
+    <div class="back-link">
+      Already have an account? <a href="{{ url_for('admin_login') }}">Login here</a>
+    </div>
+    <div class="back-link">
+      <a href="/">← Back to App</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function checkStrength(pwd) {
+  let score = 0;
+  if (pwd.length >= 6)  score++;
+  if (pwd.length >= 10) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  const colors = ['#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+  const widths  = ['20%','40%','60%','80%','100%'];
+  const fill = document.getElementById('strengthFill');
+  fill.style.width      = widths[Math.min(score-1,4)] || '0%';
+  fill.style.background = colors[Math.min(score-1,4)] || '#ef4444';
+}
+document.getElementById('cpwd').addEventListener('input', function() {
+  const msg = document.getElementById('matchMsg');
+  if (this.value === document.getElementById('pwd').value) {
+    msg.textContent = '✅ Passwords match';
+    msg.style.color = '#16a34a';
+  } else {
+    msg.textContent = '❌ Passwords do not match';
+    msg.style.color = '#ef4444';
+  }
+});
+function validateForm() {
+  const pwd  = document.getElementById('pwd').value;
+  const cpwd = document.getElementById('cpwd').value;
+  if (pwd !== cpwd) { alert('Passwords do not match!'); return false; }
+  if (pwd.length < 6) { alert('Password must be at least 6 characters!'); return false; }
+  return true;
+}
+</script>
+</body>
+</html>

@@ -743,6 +743,39 @@ from auth_manager import (
 )
 
 
+@app.route('/admin/signup', methods=['GET', 'POST'])
+def admin_signup():
+    error = None
+    if request.method == 'POST':
+        name     = request.form.get('name', '').strip()
+        username = request.form.get('username', '').strip().lower()
+        email    = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm  = request.form.get('confirm_password', '')
+        role     = request.form.get('role', 'viewer')
+
+        # Security: self-signup can only create Doctor or Viewer accounts
+        if role not in ('viewer', 'doctor'):
+            role = 'viewer'
+
+        if not name or len(name) < 2:
+            error = 'Please enter your full name.'
+        elif not username or len(username) < 3:
+            error = 'Username must be at least 3 characters.'
+        elif len(password) < 6:
+            error = 'Password must be at least 6 characters.'
+        elif password != confirm:
+            error = 'Passwords do not match.'
+        else:
+            success, msg = add_user(username, password, name, email, role, created_by='self-signup')
+            if success:
+                flash('✅ Account created successfully! Please login.', 'success')
+                return redirect(url_for('admin_login'))
+            else:
+                error = msg
+    return render_template('admin_signup.html', error=error)
+
+
 def require_permission(permission):
     def decorator(f):
         @wraps(f)
