@@ -89,11 +89,19 @@
   <div class="charts-grid">
     <div class="chart-card">
       <h3>📊 Disease Distribution</h3>
+      {% if stats.disease_counts %}
       <canvas id="diseaseChart" height="220"></canvas>
+      {% else %}
+      <div style="text-align:center;padding:40px 0;color:#94a3b8;">No data yet — appears after patients use the app.</div>
+      {% endif %}
     </div>
     <div class="chart-card">
       <h3>👥 Age Group Distribution</h3>
+      {% if stats.age_groups and stats.age_groups.values() | sum > 0 %}
       <canvas id="ageChart" height="220"></canvas>
+      {% else %}
+      <div style="text-align:center;padding:40px 0;color:#94a3b8;">No data yet — appears after patients use the app.</div>
+      {% endif %}
     </div>
   </div>
 
@@ -232,6 +240,7 @@ const diseaseData = {{ stats.disease_counts | tojson }};
 const ageData     = {{ stats.age_groups | tojson }};
 
 // Disease Bar Chart
+if (document.getElementById('diseaseChart')) {
 new Chart(document.getElementById('diseaseChart'), {
   type: 'bar',
   data: {
@@ -249,8 +258,10 @@ new Chart(document.getElementById('diseaseChart'), {
     scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
   }
 });
+}
 
 // Age Pie Chart
+if (document.getElementById('ageChart')) {
 new Chart(document.getElementById('ageChart'), {
   type: 'doughnut',
   data: {
@@ -266,6 +277,7 @@ new Chart(document.getElementById('ageChart'), {
     plugins: { legend: { position: 'bottom' } }
   }
 });
+}
 </script>
 </body>
 </html>
