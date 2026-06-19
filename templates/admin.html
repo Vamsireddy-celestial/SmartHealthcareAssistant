@@ -12,7 +12,7 @@
 .admin-header .links{display:flex;gap:14px;align-items:center;}
 .admin-header a{color:#93c5fd;text-decoration:none;font-size:0.9rem;}
 .admin-header a:hover{color:#fff;}
-.logout-btn{background:#ef4444;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;}
+.logout-btn{background:rgba(239,68,68,0.15);color:#fca5a5;padding:6px 14px;border-radius:6px;font-weight:500;font-size:.85rem;border:1px solid rgba(239,68,68,0.3);}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
 .stat-card{background:#fff;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.07);}
 [data-theme="dark"] .stat-card{background:#1e293b;}
@@ -50,9 +50,9 @@
   <div class="brand">🏥 Smart Healthcare — Admin Panel</div>
   <div class="links">
     <span style="color:#93c5fd;font-size:.9rem;">👤 {{ admin_name }} <span style="background:rgba(255,255,255,.15);padding:3px 8px;border-radius:10px;font-size:.75rem;margin-left:4px;">{{ role_label }}</span></span>
-    {% if "manage_users" in permissions %}<a href="{{ url_for('admin_users') }}" style="background:#7c3aed;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;">👥 Users</a>{% endif %}<a href="/">🌐 View App</a>
+    {% if "manage_users" in permissions %}<a href="{{ url_for('admin_users') }}" style="background:rgba(124,58,237,0.15);color:#c4b5fd;padding:6px 14px;border-radius:6px;font-weight:500;font-size:.85rem;border:1px solid rgba(124,58,237,0.3);">👥 Users</a>{% endif %}<a href="/" style="font-weight:500;font-size:.85rem;">🌐 View App</a>
     <button onclick="toggleDark()" id="darkBtn" style="background:transparent;border:none;color:#93c5fd;cursor:pointer;font-size:1.1rem;">🌙</button>
-    <a href="{{ url_for('admin_change_password') }}" style="background:#7c3aed;color:#fff;padding:6px 14px;border-radius:6px;font-weight:600;">🔑 Change Password</a>
+    <a href="{{ url_for('admin_change_password') }}" style="background:rgba(124,58,237,0.15);color:#c4b5fd;padding:6px 14px;border-radius:6px;font-weight:500;font-size:.85rem;border:1px solid rgba(124,58,237,0.3);">🔑 Change Password</a>
     <a href="{{ url_for('admin_logout') }}" class="logout-btn">🚪 Logout</a>
   </div>
 </div>
